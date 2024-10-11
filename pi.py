@@ -1,36 +1,35 @@
-from brother_ql.raster import BrotherQLRaster
-from brother_ql.conversion import convert
-from brother_ql.backends.helpers import send
-import typst
-import tempfile
+import datetime
+import api
 
-printer_model = 'QL-800'
-printer_backend = 'linux_kernel'
-printer_address = '/dev/usb/lp0'
+from gpiozero import Button
+from signal import pause
+from printing import print_label
 
-label_size = '62'
 
-qlr = BrotherQLRaster(printer_model)
+def get_date_string() -> str:
+    return datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d %H:%M:%S")
 
-text = "Hello, World!"
 
-tmp_png = tempfile.NamedTemporaryFile(mode="w+")
+button_pins = [27, 22, 24, 23]
+button_texts = ["Leo", "Nia", "Tim", get_date_string]
 
-# Create temporary copy of label.typ and add variable
-with open("label.typ", "r") as f:
-    template = f.read()
 
-    # construct temporary file with populated variable
-    tmp = tempfile.NamedTemporaryFile(mode="w+")
-    tmp.write(f"#let LABEL_TEXT = [*{text}*]\n" + template)
-    tmp.seek(0)
+def return_text_or_evaluated_function(text_or_function):
+    if callable(text_or_function):
+        return text_or_function()
+    else:
+        return text_or_function
 
-    typst.compile(tmp.name, output=tmp_png.name, format="png", ppi=600)
 
-# Convert the image to the correct format and print
-convert(qlr, [tmp_png.name], label_size, cut=True, red=True, dither=True)
+def main():
+    buttons = [Button(pin, pull_up=False) for pin in button_pins]
 
-# Send the label to the printer
-send(instructions=qlr.data, printer_identifier=printer_address, backend_identifier=printer_backend)
+    for i, _ in enumerate(buttons):
+        print(f"linking button {i} to text {button_texts[i]}")
+        buttons[i].when_pressed = lambda i0 = i: print_label(return_text_or_evaluated_function(button_texts[i0]))
 
-print("Label sent to the printer.")
+    api.app.run(host='0.0.0.0', port=80)
+    pause()
+
+
+main()
