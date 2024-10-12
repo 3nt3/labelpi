@@ -1,16 +1,28 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, render_template
 from printing import print_label
 
 app = Flask(__name__)
 
-@app.route('/print', methods=['POST'])
-def print():
-    data = request.get_json()
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-    if 'text' not in data:
-        return "Missing 'text' field", 400
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        data = request.form
 
-    print_label(data['text'])
+        if 'text' not in data:
+            return "Missing 'text' field", 400
 
-    return "OK", 200
+        try:
+            print_label(data['text'])
+        except Exception as e:
+            return render_template('/index.html', error=f"Error printing label: {e}")
 
+        return render_template('/index.html', message="Label printed!!")
+
+    # return template
+    return render_template('/index.html')
+
+
+if __name__ == '__main__':
+    app.run()
