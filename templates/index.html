@@ -11,8 +11,6 @@
         <main class="p-8 md:p-16 rounded-xl shadow-lg bg-emerald-50 max-w-[500px] gap-4 flex flex-col">
             <h1 class="text-2xl md:text-4xl font-bold font-mono break-words">hilde8 labeldrucker</h1>
 
-            <p>Wenn du deinen Text mit eckigen Klammern umschließt geht <a class="text-emerald-600 underline" href="https://typst.app/docs/reference/syntax/">typst syntax.</a></p>
-
             {% if error %}
                 <div class="bg-red-100 border border-red-200 text-red-700 p-4 rounded-md" role="alert">
                     <p>Fehlermeldung: {{ error }}</p>
@@ -27,9 +25,19 @@
 
             <form action="/" method="post">
                 <label for="text" class="block">Text</label>
-                <input type="text" name="text" id="text" class="w-full p-2 border border-gray-300 rounded-md min-w-[50px]" required>
+                <textarea type="text" name="text" id="text" class="w-full p-2 border border-gray-300 rounded-md min-w-[50px]" required> </textarea>
+                <input type="checkbox" name="preformatted" id="preformatted" class="mr-2">
+                <label for="preformatted"> <a class="text-emerald-600 underline" href="https://typst.app/docs/reference/syntax/">Typst syntax.</a> verwenden</label>
 
                 <button type="submit" class="w-full mt-2 p-2 bg-emerald-600 text-emerald-50 rounded-md font-bold">Drucken</button>
+            </form>
+
+            <p class="self-center">— oder —</p>
+
+
+            <form action="/" method="post" class="flex flex-col gap-2" enctype="multipart/form-data">
+                <input type="file" id="myFile" name="image" accept=".png,.jpg,.jpeg">
+                <button type="submit" name="action" value="print_last" class="w-full mt-2 p-2 bg-emerald-600 text-emerald-50 rounded-md font-bold">Bild drucken</button>
             </form>
         </main>
     </body>
