@@ -22,11 +22,7 @@ def print_label(text, preformatted=False):
         # construct temporary file with populated variable
         tmp = tempfile.NamedTemporaryFile(mode="w+")
 
-        # preformatted text by enclosing in brackets (typst content syntax)
-        if preformatted:
-            tmp.write(f"#let LABEL_TEXT = [{text}]\n" + template)
-        else:
-            tmp.write(f"#let LABEL_TEXT = [*{text}*]\n" + template)
+        tmp.write(f"#let LABEL_TEXT = [{text}]\n" + template)
         tmp.seek(0)
 
         typst.compile(tmp.name, output=tmp_png.name, format="png", ppi=600)
