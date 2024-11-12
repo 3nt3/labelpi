@@ -16,7 +16,7 @@ def print_label(text, preformatted=False):
     tmp_png = tempfile.NamedTemporaryFile(mode="w+")
 
     # Create temporary copy of label.typ and add variable
-    with open("label.typ", "r") as f:
+    with open("typst/label.typ", "r") as f:
         template = f.read()
 
         # construct temporary file with populated variable
@@ -32,7 +32,7 @@ def print_label(text, preformatted=False):
         typst.compile(tmp.name, output=tmp_png.name, format="png", ppi=600)
 
     # Convert the image to the correct format and print
-    convert(qlr, [tmp_png.name], label_size, cut=True, red=True, dither=True)
+    convert(qlr, [tmp_png.name], label_size, cut=True, dither=True, dpi_600=True, hq=True)
 
     # Send the label to the printer
     send(instructions=qlr.data, printer_identifier=printer_address, backend_identifier=printer_backend)
@@ -50,7 +50,7 @@ def print_image(image):
     qlr = BrotherQLRaster(printer_model)
 
     # Convert the image to the correct format and print
-    convert(qlr, [image], label_size, cut=True, red=True, dither=True)
+    convert(qlr, [image], label_size, cut=True, dither=True, dpi_600=600, hq=True)
 
     # Send the label to the printer
     send(instructions=qlr.data, printer_identifier=printer_address, backend_identifier=printer_backend)
