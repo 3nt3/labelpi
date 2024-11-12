@@ -8,37 +8,117 @@
         <link href="/static/css/main.css" rel="stylesheet">
     </head>
     <body class="w-screen h-screen bg-emerald-800 flex justify-center items-center text-emerald-900 p-8">
-        <main class="p-8 md:p-16 rounded-xl shadow-lg bg-emerald-50 max-w-[500px] gap-4 flex flex-col">
-            <h1 class="text-2xl md:text-4xl font-bold font-mono break-words">hilde8 labeldrucker</h1>
+        <main class="p-8 md:p-16 rounded-xl shadow-lg bg-emerald-50 w-[700px]">
+            <div class="flex flex-col gap-2">
+                <h1 class="text-2xl md:text-4xl font-bold font-mono break-words mb-4">hilde8 labeldrucker</h1>
+                {% if not error %}
+                    <div class="bg-red-100 border border-red-200 text-red-700 p-4 rounded-md" role="alert">
+                        <p class="font-bold">Fehler</p>
+                        <p>{{ error }}</p>
+                    </div>
+                {% endif %}
 
-            {% if error %}
-                <div class="bg-red-100 border border-red-200 text-red-700 p-4 rounded-md" role="alert">
-                    <p>Fehlermeldung: {{ error }}</p>
-                </div>
-            {% endif %}
+                {% if message %}
+                    <div class="bg-sky-100 border border-sky-200 text-sky-700 p-4 rounded-md" role="alert">
+                        <p>{{ message }}</p>
+                    </div>
+                {% endif %}
 
-            {% if message %}
-                <div class="bg-sky-100 border border-sky-200 text-sky-700 p-4 rounded-md" role="alert">
-                    <p>{{ message }}</p>
-                </div>
-            {% endif %}
+                <form action="/" method="post" class="">
+                    <div class="flex gap-4">
+                        <div class="flex flex-col min-h-[220px]">
+                            <label for="text" class="block">Text</label>
+                            <textarea type="text" name="text" id="text" class="w-full p-2 border border-gray-300 rounded-md min-w-[50px] flex-1" required> </textarea>
+                            <!-- <label for="preformatted"> <a class="text-emerald-600 underline" href="https://typst.app/docs/reference/syntax/">Typst syntax.</a> verwenden</label> -->
 
-            <form action="/" method="post">
-                <label for="text" class="block">Text</label>
-                <textarea type="text" name="text" id="text" class="w-full p-2 border border-gray-300 rounded-md min-w-[50px]" required> </textarea>
-                <input type="checkbox" name="preformatted" id="preformatted" class="mr-2">
-                <label for="preformatted"> <a class="text-emerald-600 underline" href="https://typst.app/docs/reference/syntax/">Typst syntax.</a> verwenden</label>
+                        </div>
+                        <div class="flex gap-2 flex-col w-1/2">
+                            <h3 class="text-xl">Preview</h3>
+                            <img class="w-full rounded-md border border-solid border-grey-200" id="preview" src="/preview?text=Preview">
 
-                <button type="submit" class="w-full mt-2 p-2 bg-emerald-600 text-emerald-50 rounded-md font-bold">Drucken</button>
-            </form>
+                            <!-- align -->
+                            <select name="align" id="align" class="p-2 border border-grey-200 rounded-md">
+                                <option value="left">Links</option>
+                                <option value="center" selected="selected">Zentriert</option>
+                                <option value="right">Rechts</option>
+                            </select>
 
-            <p class="self-center">— oder —</p>
+                            <!-- font size -->
+                            <select name="size" id="size" class="p-2 border border-grey-200 rounded-md">
+                                <option value="8">8pt</option>
+                                <option value="9">9pt</option>
+                                <option value="10">1pt</option>
+                                <option value="11">11pt</option>
+                                <option value="12">12pt</option>
+                                <option value="14">14pt</option>
+                                <option value="16" selected>16pt</option>
+                                <option value="18">18pt</option>
+                                <option value="21">21pt</option>
+                                <option value="24">24pt</option>
+                                <option value="30">30pt</option>
+                                <option value="36">36pt</option>
+                                <option value="48">48pt</option>
+                                <option value="60">60pt</option>
+                                <option value="72">72pt</option>
+                            </select>
+                            <!-- font weight -->
+                            <select name="weight" id="weight" class="p-2 border border-grey-200 rounded-md">
+                                <option value="regular">Normal</option>
+                                <option value="bold">Fett</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full mt-2 p-2 bg-emerald-600 text-emerald-50 rounded-md font-bold">Drucken</button>
+                </form>
+
+                <p class="self-center">— oder —</p>
 
 
-            <form action="/" method="post" class="flex flex-col gap-2" enctype="multipart/form-data">
-                <input type="file" id="myFile" name="image" accept=".png,.jpg,.jpeg">
-                <button type="submit" name="action" value="print_last" class="w-full mt-2 p-2 bg-emerald-600 text-emerald-50 rounded-md font-bold">Bild drucken</button>
-            </form>
+                <form action="/" method="post" class="flex flex-col gap-2" enctype="multipart/form-data">
+                    <input type="file" id="myFile" name="image" accept=".png,.jpg,.jpeg">
+                    <button type="submit" name="action" value="print_last" class="w-full mt-2 p-2 bg-emerald-600 text-emerald-50 rounded-md font-bold">Bild drucken</button>
+                </form>
+            </div>
         </main>
+        <script>
+            let debounceTimeout;
+
+            const handler = function() {
+                let inputValue = document.getElementById('text').value;
+                console.log(inputValue);
+
+                // get font options
+                const align = document.getElementById('align').value;
+                const size = document.getElementById('size').value;
+                const weight = document.getElementById('weight').value;
+
+                console.log(align, size, weight);
+
+                // Clear the previous timeout
+                clearTimeout(debounceTimeout);
+
+                // Set a new timeout
+                debounceTimeout = setTimeout(() => {
+                    if (inputValue) {
+                        inputValue = `#set align(${align})\n#set text(size: ${size}pt, weight: "${weight}")\n${inputValue}`;
+
+                        fetch('/preview?text='+encodeURIComponent(inputValue))
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const imgURL = URL.createObjectURL(blob);
+                                document.getElementById('preview').src = imgURL;
+                            })
+                            .catch(err => console.error('Error fetching image:', err));
+                    } else {
+                        document.getElementById('preview').src = '';
+                    }
+                }, 200);  // 200ms delay
+            };
+
+            document.getElementById('text').addEventListener('input', handler);
+            document.getElementById('align').addEventListener('change', handler);
+            document.getElementById('size').addEventListener('change', handler);
+            document.getElementById('weight').addEventListener('change', handler);
+        </script>
     </body>
 </html>
