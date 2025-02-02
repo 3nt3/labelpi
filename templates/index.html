@@ -11,7 +11,7 @@
         <main class="p-8 md:p-16 rounded-xl shadow-lg bg-emerald-50 w-[700px]">
             <div class="flex flex-col gap-2">
                 <h1 class="text-2xl md:text-4xl font-bold font-mono break-words mb-4">hilde8 labeldrucker</h1>
-                {% if not error %}
+                {% if error %}
                     <div class="bg-red-100 border border-red-200 text-red-700 p-4 rounded-md" role="alert">
                         <p class="font-bold">Fehler</p>
                         <p>{{ error }}</p>
@@ -27,14 +27,14 @@
                 <form action="/" method="post" class="">
                     <div class="flex gap-4">
                         <div class="flex flex-col min-h-[220px]">
-                            <label for="text" class="block">Text</label>
+                            <label for="text" class="text-xl block">Text</label>
                             <textarea type="text" name="text" id="text" class="w-full p-2 border border-gray-300 rounded-md min-w-[50px] flex-1" required> </textarea>
                             <!-- <label for="preformatted"> <a class="text-emerald-600 underline" href="https://typst.app/docs/reference/syntax/">Typst syntax.</a> verwenden</label> -->
 
                         </div>
                         <div class="flex gap-2 flex-col w-1/2">
-                            <h3 class="text-xl">Preview</h3>
-                            <img class="w-full rounded-md border border-solid border-grey-200" id="preview" src="/preview?text=Preview">
+                            <h3 class="text-xl">Vorschau</h3>
+                            <img class="w-full rounded-md border border-solid border-grey-200 min-h-100" id="preview" src="/preview?text=Preview" />
 
                             <!-- align -->
                             <select name="align" id="align" class="p-2 border border-grey-200 rounded-md">
@@ -42,6 +42,29 @@
                                 <option value="center" selected="selected">Zentriert</option>
                                 <option value="right">Rechts</option>
                             </select>
+
+                            <!-- typeface -->
+                            <select name="typeface" id="typeface" class="p-2 border border-grey-200 rounded-md">
+                                <optgroup label="Monospaced">
+                                    <option selected="selected" value="DINRoundPro">DIN Round Pro</option>
+                                    <option value="DIN 1451 Std">DIN 1451 Std</option>
+                                    <option value="Inconsolata">Inconsolata</option>
+                                </optgroup>
+
+                                <optgroup label="Sans-serif">
+                                    <option value="Helvetica Neue LT Std">Helvetica Neue LT Std</option>
+                                </optgroup>
+
+                                <optgroup label="Serif">
+                                    <option value="Adobe Garamond Pro">Adobe Garamond Pro</option>
+                                    <option value="Adobe Caslon Pro">Adobe Caslon Pro</option>
+                                    <option value="New Century Schoolbook">New Century Schoolbook</option>
+                                    <option value="Clarendon LT Std">Clarendon LT Std</option>
+                                    <option value="New Computer Modern">New Computer Modern</option>
+                                </optgroup>
+
+                            </select>
+
 
                             <!-- font size -->
                             <select name="size" id="size" class="p-2 border border-grey-200 rounded-md">
@@ -60,6 +83,8 @@
                                 <option value="48">48pt</option>
                                 <option value="60">60pt</option>
                                 <option value="72">72pt</option>
+                                <option value="96">96pt</option>
+                                <option value="144">144pt</option>
                             </select>
                             <!-- font weight -->
                             <select name="weight" id="weight" class="p-2 border border-grey-200 rounded-md">
@@ -91,6 +116,7 @@
                 const align = document.getElementById('align').value;
                 const size = document.getElementById('size').value;
                 const weight = document.getElementById('weight').value;
+                const font = document.getElementById('typeface').value;
 
                 console.log(align, size, weight);
 
@@ -100,15 +126,26 @@
                 // Set a new timeout
                 debounceTimeout = setTimeout(() => {
                     if (inputValue) {
-                        inputValue = `#set align(${align})\n#set text(size: ${size}pt, weight: "${weight}")\n${inputValue}`;
+                        inputValue = `#set align(${align})\n#set text(size: ${size}pt, font: "${font}", weight: "${weight}")\n${inputValue}`;
 
                         fetch('/preview?text='+encodeURIComponent(inputValue))
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const imgURL = URL.createObjectURL(blob);
-                                document.getElementById('preview').src = imgURL;
+                            .then(response => {
+                                if (!response.ok) {
+                                    const imageURL = '/preview?text=Error';
+                                } else {
+                                    return response.blob();
+                                }
                             })
-                            .catch(err => console.error('Error fetching image:', err));
+                            .then(blob => {
+                                if (blob) {
+                                    const imgURL = URL.createObjectURL(blob);
+                                    document.getElementById('preview').src = imgURL;
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Error fetching image:', err)
+                                document.getElementById('preview').src = '/preview?text=Error';
+                            });
                     } else {
                         document.getElementById('preview').src = '';
                     }
@@ -119,6 +156,7 @@
             document.getElementById('align').addEventListener('change', handler);
             document.getElementById('size').addEventListener('change', handler);
             document.getElementById('weight').addEventListener('change', handler);
+            document.getElementById('typeface').addEventListener('change', handler);
         </script>
     </body>
 </html>

@@ -1,5 +1,6 @@
 import os.path
 import typst
+import sys
 import tempfile
 
 from flask import Flask, request, render_template, send_file
@@ -33,7 +34,9 @@ def index():
             return "Missing 'text' field", 400
 
         try:
-            print_label(data['text'], data.get('preformatted', False))
+            applied_option_text = apply_options(data)
+            print("Applied options:", applied_option_text, file=sys.stderr)
+            print_label(applied_option_text, True)
         except Exception as e:
             return render_template('/index.html', error=f"Error printing label: {e}")
 
@@ -46,6 +49,15 @@ def index():
     # return template
     return render_template('/index.html')
 
+def apply_options(data: dict[str, str]) -> str:
+    align = data.get('align', 'left')
+    size = data.get('size', '14')
+    font = data.get('typeface', '')
+    weight = data.get('weight', 'normal')
+
+    text = data.get('text', '')
+
+    return f'#set align({align})\n#set text({size}pt, font: "{font}", weight: "{weight}")\n{text}';
 
 @app.route('/preview', methods=['GET'])
 def preview():
