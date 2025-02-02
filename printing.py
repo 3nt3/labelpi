@@ -50,7 +50,7 @@ def print_image(image):
     qlr = BrotherQLRaster(printer_model)
 
     # Convert the image to the correct format and print
-    convert(qlr, [image], label_size, cut=True, dither=True, dpi_600=600, hq=True)
+    convert(qlr, [image], label_size, cut=True, dither=True, dpi_600=True, hq=True)
 
     # Send the label to the printer
     send(instructions=qlr.data, printer_identifier=printer_address, backend_identifier=printer_backend)
