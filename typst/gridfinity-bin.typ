@@ -4,6 +4,6 @@
 
 
 Bildaufhängdinger
-#place(top+left, dx: 38mm, dy: -2mm, line(length: 10cm, angle: 90deg, stroke: (thickness: 0.5pt, dash: "densely-dashed")))
+#place(top+left, dx: 42mm, dy: -2mm, line(length: 10cm, angle: 90deg, stroke: (thickness: 0.5pt, dash: "densely-dashed")))
 //
 // #place(top+left, dx: -2mm, dy: -2mm, rect(width: 38mm, height: 12mm, stroke: (thickness: 0.5pt, dash: "dashed")))
