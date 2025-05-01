@@ -25,7 +25,7 @@ def print_label(text, preformatted=False):
 
         typst.compile(tmp.name, output=tmp_png.name, format="png", ppi=600)
 
-    brother_label.print(label_size, [tmp_png.name], cut=True, red=True, dither=True)
+    brother_label.print(label_size, [tmp_png.name], cut=True, red=False, dither=True, dpi_600=True)
 
     print("Label sent to the printer.")
 
