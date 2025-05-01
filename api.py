@@ -43,7 +43,7 @@ def index():
         return render_template('/index.html', message="Label printed!!")
 
     # check if printer is there
-    if not os.path.isfile('/dev/usb/lp0'):
+    if not os.path.exists('/dev/usb/lp0'):
         return render_template('/index.html', error="Printer not connected/turned on")
 
     # return template
