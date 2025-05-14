@@ -1,5 +1,6 @@
 Inconsolata
 TGL 0-17
+osifont
 DINRoundPro
 DIN 1451 Std
 Helvetica Neue LT Std
