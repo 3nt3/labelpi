@@ -12,6 +12,7 @@ def get_datetime_string() -> str:
 def get_date_string() -> str:
     return datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
 
+# button_pins = [539, 534, 536, 535]
 button_pins = [27, 22, 24, 23]
 button_texts = ["Leo", "Nia", "Tim", get_date_string]
 button_hold_texts = ["LeHOE", "Hure", "Timi", get_datetime_string]
