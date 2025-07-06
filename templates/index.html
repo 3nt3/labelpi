@@ -153,6 +153,32 @@
                 }, 200);  // 200ms delay
             };
 
+            document.onpaste = function(event){
+                var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+                console.log(JSON.stringify(items)); // will give you the mime types
+                for (index in items) {
+                    var item = items[index];
+                    if (item.kind === 'file') {
+                        var blob = item.getAsFile();
+                        var reader = new FileReader();
+                        reader.onload = function(event){
+                            console.log(event.target.result)}; // data url!
+                        reader.readAsDataURL(blob);
+
+                        // set form field to the image data
+
+                        document.getElementById('myFile').value = ''; // clear the file input
+                        const fileInput = document.getElementById('myFile');
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(blob);
+                        fileInput.files = dataTransfer.files; // set the files property to the DataTransfer object
+
+                        // trigger the form submit
+                        const form = document.querySelector('form');
+                    }
+                }
+            }
+
             document.getElementById('text').addEventListener('input', handler);
             document.getElementById('align').addEventListener('change', handler);
             document.getElementById('size').addEventListener('change', handler);
