@@ -66,7 +66,7 @@ def preview():
     tmp_png = tempfile.NamedTemporaryFile(mode="w+")
 
     # Create temporary copy of label.typ and add variable
-    with open("label.typ", "r") as f:
+    with open("typst/label.typ", "r") as f:
         template = f.read()
 
         # construct temporary file with populated variable
